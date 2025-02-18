@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>反射神経テスト</title>
+    <title>ゲームテスト</title>
     <style>
         body {
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
@@ -17,7 +16,29 @@
         }
         .header {
             font-size: 24px;
+            margin: 20px 0;
+        }
+        .tabs {
+            display: flex;
             margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #ddd;
+            border: 1px solid #ccc;
+            margin-right: 5px;
+            border-radius: 5px;
+        }
+        .tab.active {
+            background-color: #fff;
+            border-bottom: none;
+        }
+        .content {
+            display: none;
+        }
+        .content.active {
+            display: block;
         }
         .box {
             width: 200px;
@@ -37,12 +58,44 @@
             background-color: #ff4500;
             transform: scale(1.05);
         }
+        .emoji-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 50px);
+            gap: 10px;
+        }
+        .emoji {
+            font-size: 2rem;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
-    <div class="header">反射神経テスト</div>
-    <div class="box" id="testBox">クリックして開始</div>
+    <div class="header">ゲームテスト</div>
+    <div class="tabs">
+        <div class="tab active" data-target="reactionTest">反射神経テスト</div>
+        <div class="tab" data-target="spotTheDifference">間違い探し</div>
+    </div>
+    <div id="reactionTest" class="content active">
+        <div class="box" id="testBox">クリックして開始</div>
+    </div>
+    <div id="spotTheDifference" class="content">
+        <div class="emoji-grid" id="emojiGrid"></div>
+        <div id="result"></div>
+    </div>
     <script>
+        const tabs = document.querySelectorAll('.tab');
+        const contents = document.querySelectorAll('.content');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                contents.forEach(content => content.classList.remove('active'));
+                document.getElementById(tab.getAttribute('data-target')).classList.add('active');
+            });
+        });
+
+        // 反射神経テスト
         const testBox = document.getElementById('testBox');
         let startTime;
 
@@ -63,6 +116,38 @@
                 }, 2000); // 2秒後にリセット
             }
         });
+
+        // 間違い探し
+        const emojiGrid = document.getElementById('emojiGrid');
+        const result = document.getElementById('result');
+        const emojis = ['😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '😊', '😇'];
+        let startSpotTime;
+
+        function generateEmojis() {
+            emojiGrid.innerHTML = '';
+            const correctEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+            const wrongEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+            const wrongPosition = Math.floor(Math.random() * 25);
+
+            for (let i = 0; i < 25; i++) {
+                const emojiSpan = document.createElement('span');
+                emojiSpan.textContent = i === wrongPosition ? wrongEmoji : correctEmoji;
+                emojiSpan.classList.add('emoji');
+                emojiSpan.addEventListener('click', () => {
+                    if (i === wrongPosition) {
+                        const reactionTime = new Date() - startSpotTime;
+                        result.textContent = `間違い発見時間: ${reactionTime}ms`;
+                    } else {
+                        result.textContent = '間違いではありません！';
+                    }
+                });
+                emojiGrid.appendChild(emojiSpan);
+            }
+
+            startSpotTime = new Date();
+        }
+
+        document.querySelector('[data-target="spotTheDifference"]').addEventListener('click', generateEmojis);
     </script>
 </body>
 </html>
