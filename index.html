@@ -79,6 +79,7 @@
         <div class="box" id="testBox">クリックして開始</div>
     </div>
     <div id="spotTheDifference" class="content">
+        <button id="startButton">スタート</button>
         <div class="emoji-grid" id="emojiGrid"></div>
         <div id="result"></div>
     </div>
@@ -118,6 +119,7 @@
         });
 
         // 間違い探し
+        const startButton = document.getElementById('startButton');
         const emojiGrid = document.getElementById('emojiGrid');
         const result = document.getElementById('result');
         const emojis = ['😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '😊', '😇'];
@@ -147,7 +149,7 @@
             startSpotTime = new Date();
         }
 
-        document.querySelector('[data-target="spotTheDifference"]').addEventListener('click', generateEmojis);
+        startButton.addEventListener('click', generateEmojis);
     </script>
 </body>
 </html>
